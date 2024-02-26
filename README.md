@@ -32,11 +32,13 @@ This will be a lambda function that uses CDK to call SES to send an invitation l
 lambda function node20.x
 
 [lambda code](/src/lambda/send-assessment.mjs)
-``` json test payload
+
+lambda test payload:
+``` json 
 {
-    toEmail: "email@criteriacorp.com",
-    fromEmail:"email@criteriacorp.com",
-    companyName: "Criteria Corp Testing"
+    "toEmail": "email@criteriacorp.com",
+    "fromEmail":"email@criteriacorp.com",
+    "companyName": "Criteria Corp Testing"
 }
 ```
 
