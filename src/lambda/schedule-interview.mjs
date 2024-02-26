@@ -4,7 +4,7 @@ const ses = new SESClient({ region: "us-east-1" });
 
 export const handler = async (event) => {
   console.debug(event);
-  const {toEmail, fromEmail} = event;
+  const {toEmail, fromEmail} = event.detail;
   const companyName = event.companyName ?? "Company";
 
   const command = new SendEmailCommand({

@@ -1,11 +1,10 @@
-
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 const ses = new SESClient({ region: "us-east-1" });
 
 
 export const handler = async (event) => {
     console.debug(event);
-    const { toEmail, fromEmail } = event;
+    const { toEmail, fromEmail } = event.detail;
     const companyName = event.companyName ?? "Company";
 
     const command = new SendEmailCommand({
@@ -22,22 +21,9 @@ export const handler = async (event) => {
         Source: fromEmail,
     });
 
-    try {
-        console.log('sending email...');
-        let response = await ses.send(command);
-        // process data.
-        return response;
-    }
-    catch (error) {
-        // error handling.
-        console.error(error);
-    }
-    finally {
-        // finally.
-    }
-    const response = {
-        statusCode: 200,
-        body: JSON.stringify('Send Assessment Failed'),
-    };
+    console.log('sending email...');
+    let response = await ses.send(command);
+
     return response;
+
 };

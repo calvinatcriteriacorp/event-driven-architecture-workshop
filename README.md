@@ -24,28 +24,27 @@ You will create a Mini Applicant Tracking System (ATS) using an event-driven arc
 ### 0. IAM Permissions:
 #### Lambda Functions
 - use an existing IAM role or create a new one that has SES sendEmail permissions (AmazonSESFullAccess).
+- we will use node 20.x runtime for these lambda functions
 
 
 ### 1. Send Assessment 
 This will be a lambda function that uses CDK to call SES to send an invitation link to the candidate. 
-
-lambda function node20.x
 
 [lambda code](/src/lambda/send-assessment.mjs)
 
 lambda test payload:
 ``` json 
 {
-    "toEmail": "email@criteriacorp.com",
-    "fromEmail":"email@criteriacorp.com",
-    "companyName": "Criteria Corp Testing"
+    "detail": {       
+        "toEmail": "email@example.com",
+        "fromEmail":"email@example.com",
+        "companyName": "Example Corp"
+    }
 }
 ```
 
 ### 2. Schedule Interview with idempotency 
 This will be a lambda function that uses CDK to call SES to send a generic calendar invite. 
-
-lambda function node20.x
 
 [lambda code](/src/lambda/schedule-interview.mjs)
 
@@ -53,23 +52,68 @@ lambda function node20.x
 ### 3. Send Offer Letter 
 This will be a lambda function that sends the candidate an offer letter.
 
-
-lambda function node20.x
-
 [lambda code](/src/lambda/send-offer-letter.mjs)
 
 ### 4. Create Event Bridge Bus to route events to all the lambdas 
 Create your own named bus so your events do not mix with other people’s events. 
 You will publish events on Event Bridge to emulate an API request. 
 
+### 5. Create Event Rule to route events to the appropriate lambda function on your bus.
+- name your rule after the event type and use your event bus
+- event pattern:
+```json
+{
+  "detail-type": ["send-assessment"]
+}
+```
+- target: your lambda function
 
 
-#### Notes and Tips: 
-Review CloudWatch logs and enable X-Ray to trace events. 
+#### Tip: 
+- Review CloudWatch logs and enable X-Ray to trace events. 
 
-### 5. Duplicate your AWS resources into a CloudFormation template to deploy the stack. 
+### 6. Test your event-driven architecture by publishing events to your event bus.
+- send the following event to your event bus
+```json
+{
+  "source": "event-bridge-sender",
+  "detail-type": "send-assessment",
+  "detail": {
+    "toEmail": "email@example.com",
+    "fromEmail":"email@example.com"
+  }
+}
+```
+- check the lambda logs to see if the event was processed.
 
- 
+### 7.  Repeat step 5 and 6 for the other events.
+- remember to change the "detail-type" in the event pattern and the target to the appropriate lambda function.
+
+```json
+{
+  "source": "schedule-interview",
+  "detail-type": "send-assessment",
+  "detail": {
+    "toEmail": "email@example.com",
+    "fromEmail":"email@example.com"
+  }
+}
+```
+
+```json
+{
+  "source": "send-offer-letter",
+  "detail-type": "send-assessment",
+  "detail": {
+    "toEmail": "email@example.com",
+    "fromEmail":"email@example.com"
+  }
+}
+```
+
+
+### 8. Duplicate your AWS resources into a CloudFormation template to deploy the stack. 
+
 
 ### Bonus:  
 Create a custom flow for Insight Partners by updating the event bus to direct events to a new lambda function for insights based on event filtering. 
