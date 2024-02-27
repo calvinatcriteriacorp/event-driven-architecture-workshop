@@ -146,4 +146,44 @@ Resources:
             };
             return response;
           };
-  
+  EDAWorkshopEventBus:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: EDAWorkshopEventBus
+  SendAssessmentRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: Rule to send assessment email
+      EventBusName: !Ref EDAWorkshopEventBus
+      EventPattern:
+        detail-type:
+          - "send-assessment"
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt SendAssessmentsLambdaFunction.Arn
+          Id: SendAssessmentsLambdaFunction
+  ScheduleInterviewRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: Rule to schedule interview
+      EventBusName: !Ref EDAWorkshopEventBus
+      EventPattern:
+        detail-type:
+          - "schedule-interview"
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt ScheduleInterviewLambdaFunction.Arn
+          Id: ScheduleInterviewLambdaFunction
+  SendOfferLetterRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: Rule to send offer letter
+      EventBusName: !Ref EDAWorkshopEventBus
+      EventPattern:
+        detail-type:
+          - "send-offer-letter"
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt SendOfferLetterLambdaFunction.Arn
+          Id: SendOfferLetterLambdaFunction
+          
