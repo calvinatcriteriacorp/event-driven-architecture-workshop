@@ -130,6 +130,7 @@ Suggestion: start with 1 resource and incrementally add more resources to your t
 - Sample template for lambda: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html
 
 - starting template for CloudFormation: [start.yml](/cloudformation/start.yml)
+- try to fill out the rest of the template on your own using AWS's docs and co-pilot, but if you get stuck, you can use the finished template for reference.
 - finished template for CloudFormation: [finish.yml](/cloudformation/finish.yml)
 
 #### cmd to validate cloudformation template
