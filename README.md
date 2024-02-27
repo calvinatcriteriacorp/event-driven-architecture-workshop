@@ -123,6 +123,51 @@ You will publish events on Event Bridge to emulate an API request.
 
 
 ### 8. Duplicate your AWS resources into a CloudFormation template to deploy the stack. 
+Use a cloudformation template to deploy your application.
+
+Suggestion: start with 1 resource and incrementally add more resources to your template.
+
+- Sample template for lambda: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html
+
+- starting template for CloudFormation: [start.yml](/cloudformation/start.yml)
+- finished template for CloudFormation: [finish.yml](/cloudformation/finish.yml)
+
+#### cmd to validate cloudformation template
+```bash
+aws cloudformation validate-template \
+--template-body file://./cloudformation/start.yml
+```
+
+#### cmd to create new stack
+```bash
+aws cloudformation create-stack \
+--template-body file://./cloudformation/start.yml \
+--capabilities CAPABILITY_IAM \
+--stack-name my-mini-ats-stack-workshop
+```
+
+#### cmd to create change set
+- this creates a change set 
+``` bash
+aws cloudformation create-change-set \
+--template-body file://./cloudformation/start.yml \
+--change-set-name my-mini-ats-stack-workshop-changeset \
+--capabilities CAPABILITY_IAM \
+--change-set-type UPDATE \
+--stack-name my-mini-ats-stack-workshop
+```
+
+#### cmd to execute change set
+```bash
+aws cloudformation execute-change-set \
+--change-set-name my-mini-ats-stack-workshop-changeset \
+--stack-name my-mini-ats-stack-workshop
+```
+
+#### clean up/delete stack
+- delete the cloudformation stack and resources associated to it
+- go to AWS console: https://us-east-1.console.aws.amazon.com/cloudformation/home
+
 
 
 ### Bonus:  
