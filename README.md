@@ -1,6 +1,7 @@
 # event-driven-architecture-workshop
 
 ## Objectives
+- Learn about event-driven architecture: https://serverlessland.com/event-driven-architecture/intro
 - Practice working with AWS cli
 - Setup AWS resources
 - work with EventBridge events and buses https://us-east-1.console.aws.amazon.com/events/home?region=us-east-1#/eventbus
@@ -18,6 +19,15 @@ You will create a Mini Applicant Tracking System (ATS) using an event-driven arc
 1. Send Assessment 
 2. Schedule interview 
 3. Send offer letter 
+
+Workflow diagram:
+
+```mermaid
+graph LR
+    EventBridge--> ScheduleAssessmentLambda
+    EventBridge --> ScheduleInterviewLambda
+    EventBridge --> SendOfferLambda 
+```
 
 ## Steps:
 
@@ -76,7 +86,7 @@ You will publish events on Event Bridge to emulate an API request.
 - send the following event to your event bus
 ```json
 {
-  "source": "event-bridge-sender",
+  "source": "manual-test",
   "detail-type": "send-assessment",
   "detail": {
     "toEmail": "email@example.com",
@@ -91,8 +101,8 @@ You will publish events on Event Bridge to emulate an API request.
 
 ```json
 {
-  "source": "schedule-interview",
-  "detail-type": "send-assessment",
+  "source": "manual-test",
+  "detail-type": "schedule-interview",
   "detail": {
     "toEmail": "email@example.com",
     "fromEmail":"email@example.com"
@@ -102,8 +112,8 @@ You will publish events on Event Bridge to emulate an API request.
 
 ```json
 {
-  "source": "send-offer-letter",
-  "detail-type": "send-assessment",
+  "source": "manual-test",
+  "detail-type": "send-offer-letter",
   "detail": {
     "toEmail": "email@example.com",
     "fromEmail":"email@example.com"
@@ -118,7 +128,16 @@ You will publish events on Event Bridge to emulate an API request.
 ### Bonus:  
 Create a custom flow for Insight Partners by updating the event bus to direct events to a new lambda function for insights based on event filtering. 
 
-Insight does not want candidates to receive emails. Instead, Insights wants to receive a list of names and event ids to hand out to candidates during their on-site testing event. 
+Insight does not want candidates to receive emails. Instead, Insights wants to receive a list of names and event ids to hand out to candidates during their on-site testing event.
+
+```mermaid
+graph LR
+    EventBridge--> Filter{Event Rule Filter}
+    Filter-- detail-type: send-assessment, \n detail: isInsightCompany = false --> ScheduleAssessmentLambda
+    Filter-- detail-type: send-assessment, \n detail: isInsightCompany = true --> ScheduleAssessmentForInsightCandidatesLambda
+    Filter -- detail-type: schedule-interview --> ScheduleInterviewLambda
+    Filter -- detail-type: send-offer-letter --> SendOfferLambda 
+```
 
 ### Bonus #2: 
 Create a UI to trigger the different events in the ATS stages. 
